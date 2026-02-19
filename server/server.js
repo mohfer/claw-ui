@@ -21,7 +21,6 @@ const SKIP_PATTERNS = [
   "system note",
 ]
 
-
 const SESSION_FILE = process.env.SESSION_FILE?.replace(/^~(?=$|\/|\\)/, homedir()) || join(homedir(), ".picoclaw/workspace/sessions/cli_default.json")
 const PICOCLAW_BIN = process.env.PICOCLAW_BIN || "/usr/local/bin/picoclaw"
 
@@ -178,7 +177,6 @@ app.get("/chat/stream", (req, res) => {
   proc.stderr.on("data", (data) => {
     const text = data.toString()
 
-
     if (!llmStarted && (
       text.includes("Tool call:") ||
       text.includes("Sending") ||
@@ -249,5 +247,5 @@ app.get("/chat/stream", (req, res) => {
 const PORT = process.env.PORT || 3001
 
 app.listen(PORT, () => {
-
+  console.log(`Server listening on port ${PORT}`)
 })

@@ -21,7 +21,7 @@ A minimal, real-time web interface for [PicoClaw](https://github.com/sipeed/pico
 
 ## Configuration
 
-Claw UI uses a proxy server to connect the web interface with your PicoClaw agent. You can customize paths and ports using a `.env` file in the project root (no need to edit `server/server.js`).
+Claw UI uses a proxy server to connect the web interface with your PicoClaw agent. You can customize paths and ports using a `.env` file in the project root.
 
 - **Session File Path:**  
   By default, chat history is read from:  
@@ -50,21 +50,32 @@ Claw UI uses a proxy server to connect the web interface with your PicoClaw agen
 
 ## Getting Started
 
+
 ### 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Run the proxy server
+### 2. Copy environment config
+
+If you need custom configuration, copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` as needed for your setup.
+
+### 3. Run the proxy server
 
 ```bash
 npm run server
 ```
 
-This starts an Express proxy that connects the UI to your PicoClaw agent (default: `localhost:3000`).
+This starts an Express proxy that connects the UI to your PicoClaw agent (default: `localhost:3001`).
 
-### 3. Start the Vite development server
+### 4. Start the Vite development server
 
 ```bash
 npm run dev
@@ -74,7 +85,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser to use the c
 
 > The Vite config automatically proxies `/chat` requests to the proxy server.
 
-### 4. Build for production
+### 5. Build for production
 
 ```bash
 npm run build
