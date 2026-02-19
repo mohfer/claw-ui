@@ -30,7 +30,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col h-screen max-w-3xl mx-auto">
+    <div className="flex flex-col h-screen max-w-4xl mx-auto">
       <header className="flex items-center px-6 pt-5 pb-4 border-b border-[#e8e6e0] bg-[#f7f6f3] shrink-0">
         <div className="font-mono-dm text-[13px] font-medium tracking-wide flex items-center gap-2">
           <span className={`w-2 h-2 rounded-full shrink-0 transition-colors duration-300 ${
