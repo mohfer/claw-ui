@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+*.log
+pnpm-lock.yaml
+server/*.log
+server/node_modules/
+server/dist/
+coverage/
+.DS_Store
+*.swp
+*.swo
+build/
+vite.config.js.local
