@@ -3,6 +3,9 @@ import { spawn } from "child_process"
 import { readFileSync } from "fs"
 import { homedir } from "os"
 import { join } from "path"
+import dotenv from "dotenv"
+
+dotenv.config({ path: join(process.cwd(), ".env") })
 
 const app = express()
 app.use(express.json())
@@ -18,7 +21,9 @@ const SKIP_PATTERNS = [
   "system note",
 ]
 
-const SESSION_FILE = join(homedir(), ".picoclaw/workspace/sessions/cli_default.json")
+
+const SESSION_FILE = process.env.SESSION_FILE?.replace(/^~(?=$|\/|\\)/, homedir()) || join(homedir(), ".picoclaw/workspace/sessions/cli_default.json")
+const PICOCLAW_BIN = process.env.PICOCLAW_BIN || "/usr/local/bin/picoclaw"
 
 const HIDDEN_TOOLS = ["message"]
 
@@ -100,7 +105,7 @@ app.post("/chat", (req, res) => {
   const { message } = req.body
   if (!message) return res.status(400).json({ error: "Message is required" })
 
-  const proc = spawn("/usr/local/bin/picoclaw", ["agent"])
+  const proc = spawn(PICOCLAW_BIN, ["agent"])
   let output = ""
   let errorOutput = ""
 
@@ -140,7 +145,7 @@ app.get("/chat/stream", (req, res) => {
     res.write(`data: ${JSON.stringify(data)}\n\n`)
   }
 
-  const proc = spawn("/usr/local/bin/picoclaw", ["agent"])
+  const proc = spawn(PICOCLAW_BIN, ["agent"])
 
   let buffer = ""
   let currentBlock = []

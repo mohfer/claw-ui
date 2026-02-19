@@ -1,3 +1,14 @@
+<br>
+<div align="center">
+  <img src="./assets/screen1.png" alt="Claw UI Screenshot 1" width="45%" />
+  <img src="./assets/screen2.png" alt="Claw UI Screenshot 2" width="45%" />
+</div>
+
+<p align="center">
+  <em>Claw UI — Real-time chat interface with live streaming and tool call badges</em>
+</p>
+<br>
+
 # Claw UI
 
 A minimal, real-time web interface for [PicoClaw](https://github.com/sipeed/picoclaw) — featuring tool call badges, live message streaming, and a simple chat experience.
@@ -9,30 +20,35 @@ A minimal, real-time web interface for [PicoClaw](https://github.com/sipeed/pico
 - **Minimalist Chat**: Clean, single-page chat interface.
 - **Proxy Backend**: Simple Express server that connects the UI to the PicoClaw agent.
 
-## Project Structure
 
-```
-claw-ui/
-├── src/
-│   ├── components/
-│   │   ├── ChatInput.jsx       # Chat input box and send button
-│   │   ├── MessageBubble.jsx   # Individual message with tool badge
-│   │   ├── MessageList.jsx     # List of chat messages
-│   │   └── ToolBadge.jsx       # Renders which tool was called
-│   ├── hooks/
-│   │   └── useChat.js          # Handles chat state and SSE streaming
-│   ├── lib/
-│   │   ├── markdown.js         # Simple markdown renderer
-│   │   └── toolColor.js        # Tool label and color mapping
-│   ├── App.jsx
-│   ├── main.jsx
-│   └── index.css
-├── server/
-│   └── server.js               # Express proxy to PicoClaw agent
-├── index.html
-├── package.json
-└── vite.config.js
-```
+## Configuration
+
+Claw UI uses a proxy server to connect the web interface with your PicoClaw agent. You can customize paths and ports using a `.env` file in the project root (no need to edit `server/server.js`).
+
+- **Session File Path:**  
+  By default, chat history is read from:  
+  `~/.picoclaw/workspace/sessions/cli_default.json`  
+  To change this, set the `SESSION_FILE` variable in your `.env` file:
+  ```env
+  SESSION_FILE=/path/to/your/session.json
+  ```
+
+- **PicoClaw Agent Path:**  
+  The proxy server launches the PicoClaw agent from:  
+  `/usr/local/bin/picoclaw`  
+  If your PicoClaw binary is in a different location, set the `PICOCLAW_BIN` variable in your `.env` file:
+  ```env
+  PICOCLAW_BIN=/path/to/picoclaw
+  ```
+
+- **Port Configuration:**  
+  The proxy server listens on port `3001` by default.  
+  To change this, set the `PORT` variable in your `.env` file:
+  ```env
+  PORT=4000
+  ```
+
+> **Note:** This project is primarily tested on Linux. Customizations might be needed for other operating systems.
 
 ## Getting Started
 
@@ -72,16 +88,3 @@ npm run build
 ## Requirements
 - Node.js 18+
 - A running [PicoClaw](https://github.com/sipeed/picoclaw) agent on your system
-
-## About This Repo (Suggestion)
-
-> **Minimal web UI for PicoClaw, the lightweight AI assistant.**
-> - Real-time chat, tool call highlighting, and proxy integration.
-> - Built with React, Express, Vite. No heavy dependencies.
-
-Feel free to use this as the About section in your GitHub repository.
-
----
-
-**Contributions welcome!**
-

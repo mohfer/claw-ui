@@ -12,17 +12,17 @@ export default function App() {
 
   if (isLoadingHistory) {
     return (
-      <div className="app">
-        <header className="header">
-          <div className="logo">
-            <span className="logo-dot" />
+      <div className="flex flex-col h-screen max-w-2xl mx-auto">
+        <header className="flex items-center px-6 pt-5 pb-4 border-b border-[#e8e6e0] bg-[#f7f6f3] shrink-0">
+          <div className="font-mono-dm text-[13px] font-medium tracking-wide flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#9a9690] shrink-0" />
             Claw UI
           </div>
         </header>
-        <div className="messages messages--empty">
-          <div className="empty-state">
-            <div className="empty-icon">🦞</div>
-            <p style={{ color: "var(--text-muted)", fontSize: 14 }}>Loading history...</p>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3 text-[#9a9690]">
+            <div className="text-3xl opacity-50">🦞</div>
+            <p className="text-sm">Loading history...</p>
           </div>
         </div>
       </div>
@@ -30,23 +30,20 @@ export default function App() {
   }
 
   return (
-    <div className="app">
-      <header className="header">
-        <div className="logo">
-          <span className={`logo-dot ${isStreaming ? "logo-dot--active" : ""}`} />
+    <div className="flex flex-col h-screen max-w-3xl mx-auto">
+      <header className="flex items-center px-6 pt-5 pb-4 border-b border-[#e8e6e0] bg-[#f7f6f3] shrink-0">
+        <div className="font-mono-dm text-[13px] font-medium tracking-wide flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full shrink-0 transition-colors duration-300 ${
+            isStreaming
+              ? "bg-[#d4522a] animate-pulse-dot"
+              : "bg-[#9a9690]"
+          }`} />
           Claw UI
         </div>
       </header>
 
-      <MessageList
-        messages={messages}
-        onSuggestion={handleSuggestion}
-      />
-
-      <ChatInput
-        onSend={sendMessage}
-        isStreaming={isStreaming}
-      />
+      <MessageList messages={messages} onSuggestion={handleSuggestion} />
+      <ChatInput onSend={sendMessage} isStreaming={isStreaming} />
     </div>
   )
 }

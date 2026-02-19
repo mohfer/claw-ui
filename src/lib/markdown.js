@@ -1,4 +1,6 @@
 export function renderMarkdown(text) {
+  if (!text) return ""
+
   let html = text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -19,7 +21,7 @@ export function renderMarkdown(text) {
 
   for (const line of lines) {
     const ulMatch = line.match(/^[-*] (.+)/)
-    const olMatch = line.match(/^\d+\. (.+)/)
+    const olMatch = line.match(/^(\d+)\. (.+)/)
 
     if (ulMatch) {
       if (listType !== "ul") {
@@ -31,16 +33,20 @@ export function renderMarkdown(text) {
     } else if (olMatch) {
       if (listType !== "ol") {
         if (listType) result.push(`</${listType}>`)
-        result.push("<ol>")
+        result.push('<ol>')
         listType = "ol"
       }
-      result.push(`<li>${olMatch[1]}</li>`)
+      result.push(`<li>${olMatch[2]}</li>`)
     } else {
       if (listType) {
         result.push(`</${listType}>`)
         listType = null
       }
-      result.push(line)
+      if (line.trim() === "") {
+        result.push("<br>")
+      } else {
+        result.push(`<p>${line}</p>`)
+      }
     }
   }
 
