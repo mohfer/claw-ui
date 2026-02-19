@@ -100,39 +100,11 @@ app.get("/session", (req, res) => {
   }
 })
 
-app.post("/chat", (req, res) => {
-  const { message } = req.body
-  if (!message) return res.status(400).json({ error: "Message is required" })
-
-  const proc = spawn(PICOCLAW_BIN, ["agent"])
-  let output = ""
-  let errorOutput = ""
-
-  proc.stdout.on("data", d => { output += d.toString() })
-  proc.stderr.on("data", d => { errorOutput += d.toString() })
-
-  proc.on("close", (code) => {
-    if (code !== 0) {
-      return res.status(500).json({ error: errorOutput || `Process exited with code ${code}` })
-    }
-    let cleaned = output
-      .replace(/\ud83e\udd9e Interactive mode.*\n/, "")
-      .replace(/Goodbye!/, "")
-      .trim()
-
-    const parts = cleaned.split("\ud83e\udd9e")
-    const raw = parts.length > 1 ? parts[parts.length - 1].trim() : cleaned
-    const reply = raw.split("\n").filter(l => !isSkipped(l)).join("\n").trim()
-    res.json({ reply })
-  })
-
-  proc.stdin.write(`${message}\n`)
-  proc.stdin.end()
-})
-
 app.get("/chat/stream", (req, res) => {
   const { message } = req.query
   if (!message) return res.status(400).json({ error: "Message is required" })
+
+  const sanitized = message.replace(/\n+/g, " ").trim()
 
   res.setHeader("Content-Type", "text/event-stream")
   res.setHeader("Cache-Control", "no-cache")
@@ -240,7 +212,7 @@ app.get("/chat/stream", (req, res) => {
     }
   })
 
-  proc.stdin.write(`${message}\n`)
+  proc.stdin.write(`${sanitized}\n`)
   proc.stdin.end()
 })
 

@@ -40,21 +40,21 @@ Claw UI uses a proxy server to connect the web interface with your PicoClaw agen
   ```
 
 - **Port Configuration:**  
-  The proxy server listens on port `3001` by default.  
-  To change this, set the `PORT` variable in your `.env` file:
+  The proxy server listens on port `3001` by default, and the frontend on port `5173`.  
+  To change these, set the variables in your `.env` file:
   ```env
   PORT=4000
+  VITE_PORT=5174
   ```
 
 > **Note:** This project is primarily tested on Linux. Customizations might be needed for other operating systems.
 
 ## Getting Started
 
-
 ### 1. Install dependencies
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### 2. Copy environment config
@@ -70,7 +70,7 @@ Edit `.env` as needed for your setup.
 ### 3. Run the proxy server
 
 ```bash
-npm run server
+pnpm run server
 ```
 
 This starts an Express proxy that connects the UI to your PicoClaw agent (default: `localhost:3001`).
@@ -78,21 +78,21 @@ This starts an Express proxy that connects the UI to your PicoClaw agent (defaul
 ### 4. Start the Vite development server
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser to use the chat UI.
 
-> The Vite config automatically proxies `/chat` requests to the proxy server.
+> The Vite dev server automatically proxies `/chat` and `/session` requests to the backend proxy server.
 
 ### 5. Build for production
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 - Output is placed in `dist/`.
-- Use `npm run preview` or serve `dist/` with any static server.
+- Use `pnpm run preview` or serve `dist/` with any static server.
 
 ## Requirements
 - Node.js 18+
