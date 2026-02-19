@@ -1,33 +1,40 @@
-# claw-ui
+# Claw UI
 
-Web UI untuk [PicoClaw](https://github.com/sipeed/picoclaw) — minimalis, real-time, dengan tool badge.
+A minimal, real-time web interface for [PicoClaw](https://github.com/sipeed/picoclaw) — featuring tool call badges, live message streaming, and a simple chat experience.
 
-## Struktur
+## Features
+
+- **Real-time UI**: Streamed assistant responses, fast updates.
+- **Tool Call Badges**: See when/which tools are triggered by PicoClaw (e.g., exec, search, etc.).
+- **Minimalist Chat**: Clean, single-page chat interface.
+- **Proxy Backend**: Simple Express server that connects the UI to the PicoClaw agent.
+
+## Project Structure
 
 ```
 claw-ui/
 ├── src/
 │   ├── components/
-│   │   ├── ChatInput.jsx       # Input textarea + send button
-│   │   ├── MessageBubble.jsx   # Bubble pesan + tool badges
-│   │   ├── MessageList.jsx     # List semua pesan + empty state
-│   │   └── ToolBadge.jsx       # Badge tool calling (exec, search, dll)
+│   │   ├── ChatInput.jsx       # Chat input box and send button
+│   │   ├── MessageBubble.jsx   # Individual message with tool badge
+│   │   ├── MessageList.jsx     # List of chat messages
+│   │   └── ToolBadge.jsx       # Renders which tool was called
 │   ├── hooks/
-│   │   └── useChat.js          # Logic SSE streaming + state messages
+│   │   └── useChat.js          # Handles chat state and SSE streaming
 │   ├── lib/
-│   │   ├── markdown.js         # Render markdown sederhana
-│   │   └── toolColor.js        # Warna + label per tool
+│   │   ├── markdown.js         # Simple markdown renderer
+│   │   └── toolColor.js        # Tool label and color mapping
 │   ├── App.jsx
 │   ├── main.jsx
 │   └── index.css
 ├── server/
-│   └── server.js               # Express proxy ke picoclaw
+│   └── server.js               # Express proxy to PicoClaw agent
 ├── index.html
 ├── package.json
 └── vite.config.js
 ```
 
-## Setup
+## Getting Started
 
 ### 1. Install dependencies
 
@@ -35,32 +42,46 @@ claw-ui/
 npm install
 ```
 
-Tambahkan express untuk server:
+### 2. Run the proxy server
 
 ```bash
-npm install express
+npm run server
 ```
 
-### 2. Jalankan proxy server
+This starts an Express proxy that connects the UI to your PicoClaw agent (default: `localhost:3000`).
 
-```bash
-node server/server.js
-```
-
-### 3. Jalankan dev server Vite
+### 3. Start the Vite development server
 
 ```bash
 npm run dev
 ```
 
-Buka `http://localhost:5173`
+Open [http://localhost:5173](http://localhost:5173) in your browser to use the chat UI.
 
-> Vite proxy `/chat` ke `localhost:3000` otomatis via `vite.config.js`
+> The Vite config automatically proxies `/chat` requests to the proxy server.
 
-## Build production
+### 4. Build for production
 
 ```bash
 npm run build
 ```
 
-Output di `dist/` — serve dengan nginx atau `npm run preview`.
+- Output is placed in `dist/`.
+- Use `npm run preview` or serve `dist/` with any static server.
+
+## Requirements
+- Node.js 18+
+- A running [PicoClaw](https://github.com/sipeed/picoclaw) agent on your system
+
+## About This Repo (Suggestion)
+
+> **Minimal web UI for PicoClaw, the lightweight AI assistant.**
+> - Real-time chat, tool call highlighting, and proxy integration.
+> - Built with React, Express, Vite. No heavy dependencies.
+
+Feel free to use this as the About section in your GitHub repository.
+
+---
+
+**Contributions welcome!**
+
