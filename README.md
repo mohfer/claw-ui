@@ -1,4 +1,3 @@
-<br>
 <div align="center">
   <img src="./assets/screen1.png" alt="Claw UI Screenshot 1" width="45%" />
   <img src="./assets/screen2.png" alt="Claw UI Screenshot 2" width="45%" />
@@ -7,7 +6,6 @@
 <p align="center">
   <em>Claw UI — Real-time chat interface with live streaming and tool call badges</em>
 </p>
-<br>
 
 # Claw UI
 
