@@ -17,6 +17,7 @@ A minimal, real-time web interface for [PicoClaw](https://github.com/sipeed/pico
 - **Tool Call Badges**: See when/which tools are triggered by PicoClaw (e.g., exec, search, etc.).
 - **Minimalist Chat**: Clean, single-page chat interface.
 - **Proxy Backend**: Simple Express server that connects the UI to the PicoClaw agent.
+- **Reset Session**: Fitur untuk menghapus dan memulai ulang sesi chat (reset history), bisa klik tombol "Reset Session" di UI untuk membersihkan percakapan.
 
 
 ## Configuration
@@ -48,6 +49,10 @@ Claw UI uses a proxy server to connect the web interface with your PicoClaw agen
   ```
 
 > **Note:** This project is primarily tested on Linux. Customizations might be needed for other operating systems.
+
+## Requirements
+- Node.js 18+
+- A running [PicoClaw](https://github.com/sipeed/picoclaw) agent on your system
 
 ## Getting Started
 
@@ -93,7 +98,3 @@ pnpm run build
 
 - Output is placed in `dist/`.
 - Use `pnpm run preview` or serve `dist/` with any static server.
-
-## Requirements
-- Node.js 18+
-- A running [PicoClaw](https://github.com/sipeed/picoclaw) agent on your system
