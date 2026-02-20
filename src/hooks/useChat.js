@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react"
-
-const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`
+import { uid } from "../lib/uid"
+import { createStream } from "../lib/streamHandler"
 
 export function useChat() {
   const [messages, setMessages] = useState([])
@@ -10,10 +10,10 @@ export function useChat() {
   const streamIdRef = useRef(null)
 
   useEffect(() => {
-    loadSession()
+    loadMessagesFromSession()
   }, [])
 
-  const loadSession = useCallback(() => {
+  const loadMessagesFromSession = useCallback(() => {
     setIsLoadingHistory(true)
     fetch("/session")
       .then(r => r.json())
@@ -27,7 +27,7 @@ export function useChat() {
         }))
         setMessages(hydrated)
       })
-      .catch(() => { })
+      .catch((err) => { console.error("Failed to load session:", err) })
       .finally(() => setIsLoadingHistory(false))
   }, [])
 
@@ -68,58 +68,70 @@ export function useChat() {
     const streamId = uid()
     streamIdRef.current = streamId
     const url = `/chat/stream?message=${encodeURIComponent(text)}&streamId=${encodeURIComponent(streamId)}`
-    const es = new EventSource(url)
-    esRef.current = es
-
     const targetId = assistantId
 
-    es.onmessage = (e) => {
-      const data = JSON.parse(e.data)
-      setMessages(prev => {
-        const streamingIdx = prev.findIndex(m => m.id === targetId)
-        if (streamingIdx === -1) return prev
-        const updated = [...prev]
-        const m = updated[streamingIdx]
-
-        if (data.type === "tool") {
+    const es = createStream(url, {
+      onTool: (data) => {
+        setMessages(prev => {
+          const streamingIdx = prev.findIndex(m => m.id === targetId)
+          if (streamingIdx === -1) return prev
+          const updated = [...prev]
+          const m = updated[streamingIdx]
           updated[streamingIdx] = { ...m, tools: [...m.tools, { name: data.name, args: data.args || {} }] }
-        } else if (data.type === "chunk") {
+          return updated
+        })
+      },
+      onChunk: (data) => {
+        setMessages(prev => {
+          const streamingIdx = prev.findIndex(m => m.id === targetId)
+          if (streamingIdx === -1) return prev
+          const updated = [...prev]
+          const m = updated[streamingIdx]
           const lastChunk = m.content?.split('\n').pop() || ""
           if (lastChunk !== data.text) {
             updated[streamingIdx] = { ...m, content: m.content ? m.content + "\n" + data.text : data.text }
           }
-        } else if (data.type === "done") {
+          return updated
+        })
+      },
+      onDone: (data) => {
+        setMessages(prev => {
+          const streamingIdx = prev.findIndex(m => m.id === targetId)
+          if (streamingIdx === -1) return prev
+          const updated = [...prev]
+          const m = updated[streamingIdx]
           updated[streamingIdx] = { ...m, content: m.content || data.reply || "", isStreaming: false }
-        }
-        return updated
-      })
+          return updated
+        })
 
-      if (data.type === "done") {
-        es.close()
+        try {
+          esRef.current?.close()
+        } catch (e) { }
         esRef.current = null
         streamIdRef.current = null
         setIsStreaming(false)
+      },
+      onError: (err) => {
+        try { esRef.current?.close() } catch (e) { }
+        esRef.current = null
+        streamIdRef.current = null
+        setMessages(prev => {
+          const streamingIdx = prev.findIndex(m => m.id === targetId)
+          if (streamingIdx === -1) return prev
+          const updated = [...prev]
+          updated[streamingIdx] = {
+            ...updated[streamingIdx],
+            content: updated[streamingIdx].content || "Failed to connect to the server.",
+            isStreaming: false
+          }
+          return updated
+        })
+        setIsStreaming(false)
+        console.error('Stream error:', err)
       }
-    }
+    })
 
-    es.onerror = () => {
-      es.close()
-      esRef.current = null
-      streamIdRef.current = null
-      setMessages(prev => {
-        const streamingIdx = prev.findIndex(m => m.id === targetId)
-        if (streamingIdx === -1) return prev
-        const updated = [...prev]
-        updated[streamingIdx] = {
-          ...updated[streamingIdx],
-          content: updated[streamingIdx].content || "Failed to connect to the server.",
-          isStreaming: false
-        }
-
-        return updated
-      })
-      setIsStreaming(false)
-    }
+    esRef.current = es
   }, [isStreaming])
 
   const cancel = useCallback(() => {
@@ -129,7 +141,7 @@ export function useChat() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ streamId: sid })
-      }).catch(() => { })
+      }).catch((err) => { console.error('Failed to cancel stream:', err) })
       streamIdRef.current = null
     }
 
@@ -151,5 +163,5 @@ export function useChat() {
     })
   }, [])
 
-  return { messages, isStreaming, isLoadingHistory, sendMessage, cancel, reloadSession: loadSession, addMessage }
+  return { messages, isStreaming, isLoadingHistory, sendMessage, cancel, reloadSession: loadMessagesFromSession, addMessage }
 }

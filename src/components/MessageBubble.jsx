@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react"
+import PropTypes from 'prop-types'
 import { ToolBadge } from "./ToolBadge"
 import { renderMarkdown } from "../lib/markdown"
+import { copyToClipboard } from "../lib/copyToClipboard"
 
 function TypingDots() {
   return (
@@ -31,11 +33,12 @@ export function MessageBubble({ message }) {
       const btn = document.createElement('button')
       btn.type = 'button'
       btn.innerText = 'Copy'
-      btn.className = 'absolute top-2 right-2 text-[12px] px-2 py-1 rounded bg-white border border-[#e8e6e0] text-[#1a1916] hover:bg-[#d4522a] hover:text-white transition-colors'
+      btn.className = 'absolute top-2 right-2 text-[12px] px-2 py-1 rounded-md bg-white border border-[#e8e6e0] text-[#1a1916] hover:bg-[#d4522a] hover:text-white transition-colors cursor-pointer'
       btn.style.zIndex = 5
 
       btn.addEventListener('click', async (ev) => {
         ev.stopPropagation()
+
         const extractCodeText = () => {
           const codeEl = pre.querySelector('code')
           if (codeEl) return codeEl.innerText
@@ -50,43 +53,13 @@ export function MessageBubble({ message }) {
 
         const codeText = extractCodeText()
         try {
-          const copyFallback = (text) => {
-            return new Promise((resolve) => {
-              try {
-                const ta = document.createElement('textarea')
-                ta.value = text
-                ta.style.position = 'fixed'
-                ta.style.left = '-9999px'
-                document.body.appendChild(ta)
-                ta.focus()
-                ta.select()
-                const ok = document.execCommand && document.execCommand('copy')
-                document.body.removeChild(ta)
-                resolve(Boolean(ok))
-              } catch (e) {
-                resolve(false)
-              }
-            })
-          }
-
-          let ok = false
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            try {
-              await navigator.clipboard.writeText(codeText)
-              ok = true
-            } catch (e) {
-              ok = await copyFallback(codeText)
-            }
-          } else {
-            ok = await copyFallback(codeText)
-          }
-
-
+          const ok = await copyToClipboard(codeText)
 
           const prev = btn.innerText
           btn.innerText = ok ? 'Copied' : 'Copy'
           setTimeout(() => { btn.innerText = prev }, 1200)
         } catch (err) {
+          console.error('Error copying code text:', err)
         }
       })
 
@@ -163,4 +136,13 @@ export function MessageBubble({ message }) {
       </div>
     </div>
   )
+}
+
+MessageBubble.propTypes = {
+  message: PropTypes.shape({
+    role: PropTypes.string.isRequired,
+    content: PropTypes.string,
+    tools: PropTypes.array,
+    isStreaming: PropTypes.bool,
+  }).isRequired,
 }
