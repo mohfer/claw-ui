@@ -17,7 +17,7 @@ A minimal, real-time web interface for [PicoClaw](https://github.com/sipeed/pico
 - **Tool Call Badges**: See when/which tools are triggered by PicoClaw (e.g., exec, search, etc.).
 - **Minimalist Chat**: Clean, single-page chat interface.
 - **Proxy Backend**: Simple Express server that connects the UI to the PicoClaw agent.
-- **Reset Session**: Fitur untuk menghapus dan memulai ulang sesi chat (reset history), bisa klik tombol "Reset Session" di UI untuk membersihkan percakapan.
+- **Reset Session**: Easily clear and restart your chat session. Click the "Reset Session" button in the UI to wipe the conversation history and start fresh.
 
 
 ## Configuration
