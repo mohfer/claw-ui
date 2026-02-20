@@ -7,6 +7,7 @@ export function useChat() {
   const [isStreaming, setIsStreaming] = useState(false)
   const [isLoadingHistory, setIsLoadingHistory] = useState(true)
   const esRef = useRef(null)
+  const streamIdRef = useRef(null)
 
   useEffect(() => {
     fetch("/session")
@@ -59,7 +60,9 @@ export function useChat() {
 
     setIsStreaming(true)
 
-    const url = `/chat/stream?message=${encodeURIComponent(text)}`
+    const streamId = uid()
+    streamIdRef.current = streamId
+    const url = `/chat/stream?message=${encodeURIComponent(text)}&streamId=${encodeURIComponent(streamId)}`
     const es = new EventSource(url)
     esRef.current = es
 
@@ -89,6 +92,7 @@ export function useChat() {
       if (data.type === "done") {
         es.close()
         esRef.current = null
+        streamIdRef.current = null
         setIsStreaming(false)
       }
     }
@@ -96,6 +100,7 @@ export function useChat() {
     es.onerror = () => {
       es.close()
       esRef.current = null
+      streamIdRef.current = null
       setMessages(prev => {
         const streamingIdx = prev.findIndex(m => m.id === targetId)
         if (streamingIdx === -1) return prev
@@ -113,14 +118,32 @@ export function useChat() {
   }, [isStreaming])
 
   const cancel = useCallback(() => {
+    const sid = streamIdRef.current
+    if (sid) {
+      fetch('/chat/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ streamId: sid })
+      }).catch(() => { })
+      streamIdRef.current = null
+    }
+
     esRef.current?.close()
     esRef.current = null
     setIsStreaming(false)
-    setMessages(prev => prev.map((m, i) =>
-      i === prev.length - 1 && m.isStreaming
-        ? { ...m, isStreaming: false }
-        : m
-    ))
+
+    setMessages(prev => {
+      if (!prev || prev.length === 0) return prev
+      const last = prev[prev.length - 1]
+      if (last && last.role === 'assistant' && last.isStreaming) {
+        return prev.slice(0, -1)
+      }
+      return prev.map((m, i) =>
+        i === prev.length - 1 && m.isStreaming
+          ? { ...m, isStreaming: false }
+          : m
+      )
+    })
   }, [])
 
   return { messages, isStreaming, isLoadingHistory, sendMessage, cancel }

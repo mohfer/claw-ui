@@ -10,6 +10,8 @@ dotenv.config({ path: join(process.cwd(), ".env") })
 const app = express()
 app.use(express.json())
 
+const runningProcs = new Map()
+
 const SKIP_PATTERNS = [
   "subagent",
   "in progress",
@@ -102,6 +104,7 @@ app.get("/session", (req, res) => {
 
 app.get("/chat/stream", (req, res) => {
   const { message } = req.query
+  const streamId = req.query.streamId || `${Date.now()}-${Math.random().toString(36).slice(2)}`
   if (!message) return res.status(400).json({ error: "Message is required" })
 
   const sanitized = message.replace(/\n+/g, " ").trim()
@@ -117,6 +120,8 @@ app.get("/chat/stream", (req, res) => {
   }
 
   const proc = spawn(PICOCLAW_BIN, ["agent"])
+
+  runningProcs.set(streamId, proc)
 
   let buffer = ""
   let currentBlock = []
@@ -157,7 +162,6 @@ app.get("/chat/stream", (req, res) => {
     )) {
       llmStarted = true
       pendingStdout = []
-
     }
 
     if (text.includes("Tool call:")) {
@@ -202,18 +206,35 @@ app.get("/chat/stream", (req, res) => {
     const finalBlock = currentBlock.length > 0 ? currentBlock : lastBlock
     send({ type: "done", code, reply: finalBlock.join("\n") })
     res.end()
-
+    runningProcs.delete(streamId)
   })
 
   req.on("close", () => {
     if (!closed) {
       closed = true
       proc.kill()
+      runningProcs.delete(streamId)
     }
   })
 
   proc.stdin.write(`${sanitized}\n`)
   proc.stdin.end()
+})
+
+app.post('/chat/cancel', (req, res) => {
+  const { streamId } = req.body || {}
+  if (!streamId) return res.status(400).json({ error: 'streamId is required' })
+
+  const proc = runningProcs.get(streamId)
+  if (!proc) return res.status(404).json({ error: 'no running process for that streamId' })
+
+  try {
+    proc.kill('SIGINT')
+    runningProcs.delete(streamId)
+    return res.json({ ok: true })
+  } catch (err) {
+    return res.status(500).json({ error: String(err) })
+  }
 })
 
 const PORT = process.env.PORT || 3001
