@@ -10,6 +10,11 @@ export function useChat() {
   const streamIdRef = useRef(null)
 
   useEffect(() => {
+    loadSession()
+  }, [])
+
+  const loadSession = useCallback(() => {
+    setIsLoadingHistory(true)
     fetch("/session")
       .then(r => r.json())
       .then(({ messages }) => {
@@ -146,5 +151,5 @@ export function useChat() {
     })
   }, [])
 
-  return { messages, isStreaming, isLoadingHistory, sendMessage, cancel }
+  return { messages, isStreaming, isLoadingHistory, sendMessage, cancel, reloadSession: loadSession, addMessage }
 }

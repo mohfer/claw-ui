@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react"
 import { ToolBadge } from "./ToolBadge"
 import { renderMarkdown } from "../lib/markdown"
 
@@ -15,6 +16,93 @@ export function MessageBubble({ message }) {
   const { role, content, tools, isStreaming } = message
   const isEmpty = !content && isStreaming
   const isUser = role === "user"
+  const contentRef = useRef(null)
+
+  useEffect(() => {
+    const root = contentRef.current
+    if (!root) return
+
+    const pres = root.querySelectorAll('pre')
+    pres.forEach(pre => {
+      if (pre.dataset.copyEnhanced) return
+      pre.dataset.copyEnhanced = '1'
+      pre.style.position = 'relative'
+
+      const btn = document.createElement('button')
+      btn.type = 'button'
+      btn.innerText = 'Copy'
+      btn.className = 'absolute top-2 right-2 text-[12px] px-2 py-1 rounded bg-white border border-[#e8e6e0] text-[#1a1916] hover:bg-[#d4522a] hover:text-white transition-colors'
+      btn.style.zIndex = 5
+
+      btn.addEventListener('click', async (ev) => {
+        ev.stopPropagation()
+        const extractCodeText = () => {
+          const codeEl = pre.querySelector('code')
+          if (codeEl) return codeEl.innerText
+          let text = ''
+          pre.childNodes.forEach(node => {
+            if (node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === 'button') return
+            if (node.nodeType === Node.TEXT_NODE) text += node.textContent
+            else text += node.innerText || node.textContent || ''
+          })
+          return text
+        }
+
+        const codeText = extractCodeText()
+        try {
+          const copyFallback = (text) => {
+            return new Promise((resolve) => {
+              try {
+                const ta = document.createElement('textarea')
+                ta.value = text
+                ta.style.position = 'fixed'
+                ta.style.left = '-9999px'
+                document.body.appendChild(ta)
+                ta.focus()
+                ta.select()
+                const ok = document.execCommand && document.execCommand('copy')
+                document.body.removeChild(ta)
+                resolve(Boolean(ok))
+              } catch (e) {
+                resolve(false)
+              }
+            })
+          }
+
+          let ok = false
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            try {
+              await navigator.clipboard.writeText(codeText)
+              ok = true
+            } catch (e) {
+              ok = await copyFallback(codeText)
+            }
+          } else {
+            ok = await copyFallback(codeText)
+          }
+
+
+
+          const prev = btn.innerText
+          btn.innerText = ok ? 'Copied' : 'Copy'
+          setTimeout(() => { btn.innerText = prev }, 1200)
+        } catch (err) {
+        }
+      })
+
+      pre.appendChild(btn)
+    })
+
+    return () => {
+      const pres2 = root.querySelectorAll('pre')
+      pres2.forEach(pre => {
+        const btn = pre.querySelector('button')
+        if (btn) btn.remove()
+        delete pre.dataset.copyEnhanced
+        pre.style.position = ''
+      })
+    }
+  }, [content])
 
   return (
     <div className={`flex flex-col gap-1.5 animate-fade-up ${isUser ? "items-end" : "items-start"}`}>
@@ -67,6 +155,7 @@ export function MessageBubble({ message }) {
 
               [&_a]:text-[#d4522a] [&_a]:no-underline [&_a]:border-b [&_a]:border-current [&_a:hover]:opacity-80
             "
+            ref={contentRef}
             dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }}
           />
         )}

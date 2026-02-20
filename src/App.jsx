@@ -4,7 +4,7 @@ import { MessageList } from "./components/MessageList"
 import { ChatInput } from "./components/ChatInput"
 
 export default function App() {
-  const { messages, isStreaming, isLoadingHistory, sendMessage, cancel } = useChat()
+  const { messages, isStreaming, isLoadingHistory, sendMessage, cancel, reloadSession } = useChat()
 
   const handleSuggestion = useCallback((text) => {
     sendMessage(text)
@@ -40,15 +40,33 @@ export default function App() {
     )
   }
 
+  const handleReset = async () => {
+    if (!confirm('Reset session? This will clear saved conversation. Continue?')) return
+    try {
+      await fetch('/session/reset', { method: 'POST' })
+      reloadSession()
+    } catch (err) {
+      alert('Failed to reset session.')
+    }
+  }
+
   return (
     <div className="flex flex-col h-screen max-w-4xl mx-auto">
-      <header className="flex items-center px-6 pt-5 pb-4 border-b border-[#e8e6e0] bg-[#f7f6f3] shrink-0">
+      <header className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[#e8e6e0] bg-[#f7f6f3] shrink-0">
         <div className="font-mono-dm text-[13px] font-medium tracking-wide flex items-center gap-2">
           <span className={`w-2 h-2 rounded-full shrink-0 transition-colors duration-300 ${isStreaming
             ? "bg-[#d4522a] animate-pulse-dot"
             : "bg-[#9a9690]"
             }`} />
           Claw UI
+        </div>
+        <div>
+          <button
+            onClick={handleReset}
+            className="text-sm px-3 py-1 rounded-md border border-[#e0ded8] bg-white hover:bg-[#d4522a] hover:text-white transition-colors cursor-pointer"
+          >
+            Reset
+          </button>
         </div>
       </header>
 

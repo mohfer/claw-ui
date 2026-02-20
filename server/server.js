@@ -1,8 +1,8 @@
 import express from "express"
 import { spawn } from "child_process"
-import { readFileSync } from "fs"
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs"
 import { homedir } from "os"
-import { join } from "path"
+import { join, dirname } from "path"
 import dotenv from "dotenv"
 
 dotenv.config({ path: join(process.cwd(), ".env") })
@@ -231,6 +231,17 @@ app.post('/chat/cancel', (req, res) => {
   try {
     proc.kill('SIGINT')
     runningProcs.delete(streamId)
+    return res.json({ ok: true })
+  } catch (err) {
+    return res.status(500).json({ error: String(err) })
+  }
+})
+
+app.post('/session/reset', (req, res) => {
+  try {
+    const dir = dirname(SESSION_FILE)
+    if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
+    writeFileSync(SESSION_FILE, JSON.stringify({ messages: [] }, null, 2), 'utf8')
     return res.json({ ok: true })
   } catch (err) {
     return res.status(500).json({ error: String(err) })
