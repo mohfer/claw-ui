@@ -12,7 +12,7 @@ A minimal, real-time web interface for [PicoClaw](https://github.com/sipeed/pico
 
 ## Demo
 
-<video src="./assets/demo.mp4" controls width="100%" />
+<video src="./assets/demo.mp4" controls width="100%"></video>
 
 ## Configuration
 
