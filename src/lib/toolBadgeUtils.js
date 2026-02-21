@@ -2,6 +2,12 @@ import { copyToClipboard } from "./copyToClipboard"
 
 export const getTextToCopy = (name, args, label) => {
     if (!args || typeof args !== 'object' || !Object.keys(args).length) return label
+    if (name === 'subagent') {
+        const { task } = args || {}
+
+        if (task) return task
+        return JSON.stringify({ name, args })
+    }
     const { command, cmd, path, directory, dir, url, query, prompt } = args
     return command || cmd || path || directory || dir || url || query || prompt
         || JSON.stringify({ name, args })

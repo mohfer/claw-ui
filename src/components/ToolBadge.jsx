@@ -32,7 +32,7 @@ export function ToolBadge({ name, args }) {
     <button
       type="button"
       onClick={handleClick}
-      className="inline-flex items-center gap-[5px] bg-[#f2f1ee] text-[#6b6860] font-mono-dm text-[11px] px-[9px] py-[3px] rounded-full border border-[#e8e6e0] animate-fade-up-fast cursor-pointer"
+      className="inline-flex items-center justify-start gap-[5px] bg-[#f2f1ee] text-[#6b6860] font-mono-dm text-[11px] px-[9px] py-[3px] rounded-full border border-[#e8e6e0] animate-fade-up-fast cursor-pointer text-left"
       title={feedback ? feedback : 'Copy'}
     >
       <span

@@ -32,7 +32,9 @@ export default function App() {
         </header>
         <div className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center gap-3 text-[#9a9690]">
-            <div className="text-3xl opacity-50">🦞</div>
+            <div className="text-4xl">
+              <img src="/assets/icon.svg" alt="Icon" className="w-10 h-10" />
+            </div>
             <p className="text-sm">Loading history...</p>
           </div>
         </div>

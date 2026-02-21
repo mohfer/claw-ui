@@ -1,15 +1,6 @@
-<div align="center">
-  <img src="./assets/screen1.png" alt="Claw UI Screenshot 1" width="45%" />
-  <img src="./assets/screen2.png" alt="Claw UI Screenshot 2" width="45%" />
-</div>
-
-<p align="center">
-  <em>Claw UI — Real-time chat interface with live streaming and tool call badges</em>
-</p>
-
 # Claw UI
 
-A minimal, real-time web interface for [PicoClaw](https://github.com/sipeed/picoclaw) — featuring tool call badges, live message streaming, and a simple chat experience.
+A minimal, real-time web interface for [PicoClaw](https://github.com/sipeed/picoclaw) with live streaming and a simple chat experience.
 
 ## Features
 
@@ -17,8 +8,11 @@ A minimal, real-time web interface for [PicoClaw](https://github.com/sipeed/pico
 - **Tool Call Badges**: See when/which tools are triggered by PicoClaw (e.g., exec, search, etc.).
 - **Minimalist Chat**: Clean, single-page chat interface.
 - **Proxy Backend**: Simple Express server that connects the UI to the PicoClaw agent.
-- **Reset Session**: Easily clear and restart your chat session. Click the "Reset Session" button in the UI to wipe the conversation history and start fresh.
+- **Reset Session**: Easily clear and restart your chat session.
 
+## Demo
+
+<video src="./assets/demo.mp4" controls width="100%" />
 
 ## Configuration
 

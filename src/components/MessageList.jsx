@@ -27,7 +27,9 @@ export function MessageList({ messages, onSuggestion }) {
     return (
       <div className="flex-1 flex items-center justify-center overflow-y-auto">
         <div className="flex flex-col items-center gap-3 text-center p-10 text-[#9a9690]">
-          <div className="text-4xl opacity-50">🦞</div>
+          <div className="text-4xl">
+            <img src="/assets/icon.svg" alt="Icon" className="w-10 h-10" />
+          </div>
           <p className="text-sm max-w-[260px] leading-relaxed">
             Ask me anything. I can search for information, execute commands, and much more.
           </p>

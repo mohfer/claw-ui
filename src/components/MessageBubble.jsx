@@ -28,13 +28,19 @@ export function MessageBubble({ message }) {
     pres.forEach(pre => {
       if (pre.dataset.copyEnhanced) return
       pre.dataset.copyEnhanced = '1'
-      pre.style.position = 'relative'
+
+      const wrapper = document.createElement('div')
+      wrapper.style.position = 'relative'
+      wrapper.dataset.copyWrapper = '1'
+      pre.parentNode.insertBefore(wrapper, pre)
+      wrapper.appendChild(pre)
 
       const btn = document.createElement('button')
       btn.type = 'button'
       btn.innerText = 'Copy'
       btn.className = 'absolute top-2 right-2 text-[12px] px-2 py-1 rounded-md bg-white border border-[#e8e6e0] text-[#1a1916] hover:bg-[#d4522a] hover:text-white transition-colors cursor-pointer'
-      btn.style.zIndex = 5
+      btn.style.zIndex = '5'
+      btn.style.position = 'absolute'
 
       btn.addEventListener('click', async (ev) => {
         ev.stopPropagation()
@@ -54,7 +60,6 @@ export function MessageBubble({ message }) {
         const codeText = extractCodeText()
         try {
           const ok = await copyToClipboard(codeText)
-
           const prev = btn.innerText
           btn.innerText = ok ? 'Copied' : 'Copy'
           setTimeout(() => { btn.innerText = prev }, 1200)
@@ -63,31 +68,34 @@ export function MessageBubble({ message }) {
         }
       })
 
-      pre.appendChild(btn)
+      wrapper.appendChild(btn)
     })
 
     return () => {
-      const pres2 = root.querySelectorAll('pre')
-      pres2.forEach(pre => {
-        const btn = pre.querySelector('button')
-        if (btn) btn.remove()
-        delete pre.dataset.copyEnhanced
-        pre.style.position = ''
+      const wrappers = root.querySelectorAll('[data-copy-wrapper]')
+      wrappers.forEach(wrapper => {
+        const pre = wrapper.querySelector('pre')
+        if (pre) {
+          delete pre.dataset.copyEnhanced
+          pre.style.position = ''
+          wrapper.parentNode.insertBefore(pre, wrapper)
+        }
+        wrapper.remove()
       })
     }
   }, [content])
 
   return (
-    <div className={`flex flex-col gap-1.5 animate-fade-up ${isUser ? "items-end" : "items-start"}`}>
+    <div className={`flex flex-col gap-1.5 animate-fade-up-fast ${isUser ? "items-end" : "items-start"}`}>
       {tools?.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5 animate-fade-up-fast">
           {tools.map((t, i) => (
             <ToolBadge key={i} name={t.name} args={t.args} />
           ))}
         </div>
       )}
 
-      <div className={`px-4 py-3 rounded-2xl max-w-[85%] text-[14.5px] leading-[1.65] ${isUser
+      <div className={`px-4 py-3 rounded-2xl max-w-[85%] text-[14.5px] leading-[1.65] animate-fade-up-fast ${isUser
         ? "bg-[#1a1916] text-[#f7f6f3] rounded-br-lg"
         : "bg-white border border-[#e8e6e0] rounded-bl-lg"
         }`}>
@@ -96,7 +104,7 @@ export function MessageBubble({ message }) {
         ) : (
           <div
             className="
-              bubble-content
+              bubble-content animate-fade-up-fast
 
               [&_p]:mb-2 [&_p:last-child]:mb-0
 

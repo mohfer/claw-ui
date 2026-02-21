@@ -5,6 +5,7 @@ const TOOL_COLORS = {
   read_file: "#e8a838",
   write_file: "#9b6fd4",
   list_dir: "#4db8b0",
+  subagent: "#a36bd4",
 }
 
 export function toolColor(name) {
@@ -34,6 +35,9 @@ export function toolLabel(name, args = {}) {
       return args.path ? `write: ${args.path}` : "write_file"
     case "list_dir":
       return args.path ? `ls: ${args.path}` : "list_dir"
+    case "subagent": {
+      return args.task ? `subagent: ${args.task}` : "subagent"
+    }
     default:
       return name
   }
