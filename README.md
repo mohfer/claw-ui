@@ -14,36 +14,6 @@ A minimal, real-time web interface for [PicoClaw](https://github.com/sipeed/pico
 
 https://github.com/user-attachments/assets/afb4017e-9534-461f-ae96-68c8954bf96d
 
-## Configuration
-
-Claw UI uses a proxy server to connect the web interface with your PicoClaw agent. You can customize paths and ports using a `.env` file in the project root.
-
-- **Session File Path:**  
-  By default, chat history is read from:  
-  `~/.picoclaw/workspace/sessions/cli_default.json`  
-  To change this, set the `SESSION_FILE` variable in your `.env` file:
-  ```env
-  SESSION_FILE=/path/to/your/session.json
-  ```
-
-- **PicoClaw Agent Path:**  
-  The proxy server launches the PicoClaw agent from:  
-  `/usr/local/bin/picoclaw`  
-  If your PicoClaw binary is in a different location, set the `PICOCLAW_BIN` variable in your `.env` file:
-  ```env
-  PICOCLAW_BIN=/path/to/picoclaw
-  ```
-
-- **Port Configuration:**  
-  The proxy server listens on port `3001` by default, and the frontend on port `5173`.  
-  To change these, set the variables in your `.env` file:
-  ```env
-  PORT=4000
-  VITE_PORT=5174
-  ```
-
-> **Note:** This project is primarily tested on Linux. Customizations might be needed for other operating systems.
-
 ## Requirements
 - Node.js 18+
 - A running [PicoClaw](https://github.com/sipeed/picoclaw) agent on your system
@@ -92,3 +62,33 @@ pnpm run build
 
 - Output is placed in `dist/`.
 - Use `pnpm run preview` or serve `dist/` with any static server.
+
+## Configuration
+
+Claw UI uses a proxy server to connect the web interface with your PicoClaw agent. You can customize paths and ports using a `.env` file in the project root.
+
+- **Session File Path:**  
+  By default, chat history is read from:  
+  `~/.picoclaw/workspace/sessions/cli_default.json`  
+  To change this, set the `SESSION_FILE` variable in your `.env` file:
+  ```env
+  SESSION_FILE=/path/to/your/session.json
+  ```
+
+- **PicoClaw Agent Path:**  
+  The proxy server launches the PicoClaw agent from:  
+  `/usr/local/bin/picoclaw`  
+  If your PicoClaw binary is in a different location, set the `PICOCLAW_BIN` variable in your `.env` file:
+  ```env
+  PICOCLAW_BIN=/path/to/picoclaw
+  ```
+
+- **Port Configuration:**  
+  The proxy server listens on port `3001` by default, and the frontend on port `5173`.  
+  To change these, set the variables in your `.env` file:
+  ```env
+  PORT=4000
+  VITE_PORT=5174
+  ```
+
+> **Note:** This project is primarily tested on Linux. Customizations might be needed for other operating systems.
